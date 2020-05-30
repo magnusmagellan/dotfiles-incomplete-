@@ -1,0 +1,435 @@
+menu-0-0-exec = /sbin/shutdown now ; requires chmod u+x /sbin/shutdown
+
+[settings]
+; Limits updates pr. <throttle_ms> to <throttle_limit>
+throttle-limit = 2
+throttle-ms = 100
+
+
+[colors]
+background = ${xrdb:color0:#221d1b}
+background-alt = ${xrdb:color1:#221d1b}
+foreground = ${xrdb:color7:#dfc588}
+foreground-alt = ${xrdb:color8:#dfc588}
+
+
+
+
+[bar/base]
+
+enable-ipc = true
+
+font-0 = xft:Hasklig:size=10;0
+font-1 = MaterialIcons:size=12;2
+font-2 = FontAwesome:size=12
+
+padding = 2
+
+border-size = 0
+
+border-color = ${colors.foreground}
+
+
+
+height = 30
+
+;radius = 20
+
+;Works very well with a radius like this! Put it on every bar.
+
+
+
+background = ${colors.background}
+
+foreground = ${colors.foreground}
+
+override-redirect=false
+
+offset-y = 10
+
+
+
+wm-restack = bspwm
+
+
+
+[bar/ws]
+
+inherit = bar/base
+
+width = 11.5%
+
+
+
+height = 35
+
+offset-x = 10
+
+line-size = 1
+
+
+ modules-left = windows
+
+
+ 
+scroll-up = bspwm-desknext
+scroll-down = bspwm-deskprev
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+
+
+
+
+[bar/music]
+
+inherit = bar/base
+
+enable-ipc = true
+
+width = 25%
+
+
+
+offset-x = 37.5%
+
+
+
+; Spotify (uses playerctl)
+
+; modules-left = previous playpause next 
+
+; modules-center = spotify
+
+; Mpd
+
+modules-center = mpd
+
+
+
+;modules-left = network-menu     volume      temperature         gmail        clock poweroff 
+[bar/tray]
+
+inherit = bar/base
+
+width = 17.5%
+
+
+
+offset-x = 82%
+
+
+
+modules-left = network pulseaudio temperature gmail time poweroff 
+
+
+
+
+
+
+
+
+
+
+
+[bar/bottom]
+wm-name = bar-bottom
+tray-position = right
+wm-restack = bspwm
+width = 100%
+height = 35
+line-size = 3
+
+padding-left = 3
+padding-right = 3
+module-margin-left = 1
+module-margin-right = 2
+underline-size = 1
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+
+font-0 = xft:Hasklig:size=10;0
+font-1 = MaterialIcons:size=12;2
+font-2 = FontAwesome:size=12
+modules-left = windows
+modules-right = network-menu volume temperature gmail  clock poweroff
+
+scroll-up = bspwm-desknext
+scroll-down = bspwm-deskprev
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+
+[module/windows]
+type = internal/bspwm
+format = <label-state>
+
+
+
+ws-icon-0 = term;τ
+ws-icon-1 = web;Ω
+ws-icon-2 = code;Λ
+ws-icon-3 = book;Σ
+ws-icon-4 = campground;Ψ
+ws-icon-5 = music;Π
+ws-icon-6 = moon;Φ
+ws-icon-default = 
+
+
+label-focused = %icon%
+label-focused-foreground = #dfc588
+label-focused-underline = #000000
+label-focused-font = 1.5
+label-focused-padding = 2
+
+label-occupied = %icon%
+label-occupied-underline = ${root.foreground}
+label-occupied-font = 1.5
+label-occupied-padding = 2
+
+label-urgent = %icon%
+label-urgent-foreground = #000000
+label-urgent-background = #bd2c40
+label-urgent-underline = #9b02a20
+label-urgent-font = 1.5
+label-urgent-padding = 2
+
+label-empty = %icon%
+label-empty-foreground = #555
+label-empty-font = 1.5
+label-empty-padding = 2
+
+[module/network]
+type = internal/network
+format-margin = 2
+interface = wlp7s0
+interval = 10
+format-connected = <ramp-signal> <label-connected>
+label-connected =  %essid%
+label-disconnected = 
+
+ramp-signal-0 =
+
+[module/network-menu]
+type = custom/script
+format-margin = 1
+exec = /home/magnus/.scripts/network lemon
+interval = 1
+
+click-right = nm-connection-editor
+
+[module/battery]
+type = internal/battery
+format-charging = <label-charging>
+format-discharging = <label-discharging>
+format-full = <label-full>
+label-charging = %percentage%
+label-discharging = %percentage%
+label-full = %percentage%
+
+battery = BAT1
+adapter = ACAD
+poll-interval = 10
+
+ramp-capacity-0 =
+
+[module/music]
+type = internal/mpd
+host = 127.0.0.1
+port = 6600
+password = 9664
+interval = 1
+
+format-online = <icon-repeat> <icon-random> <bar-progress> <toggle> <icon-next> <label-time>  <label-song>
+label-offline =
+label-song = %title%
+
+icon-play = 
+icon-pause = 
+icon-stop = 
+icon-prev = 
+icon-next = 
+icon-seekb = 
+icon-seekf = 
+icon-random = 
+icon-repeat = 
+
+
+
+
+[module/gmail]
+type = custom/script
+format-margin = 2
+exec = ~/.config/polybar/gmail/launch.py
+tail = true
+click-left = xdg-open https://mail.google.com
+
+
+[module/temperature]
+type = internal/temperature
+
+; Seconds to sleep between updates
+; Default: 2
+interval = 0.5
+format-margin = 1
+; Thermal zone to use
+; To list all the zone types, run 
+; $ for i in /sys/class/thermal/thermal_zone*; do echo "$i: $(<$i/type)"; done
+; Default: 0
+thermal-zone = 0
+
+; Full path of temperature sysfs path
+; Use `sensors` to find preferred temperature source, then run
+; $ for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done
+; to find path to desired file
+; Default reverts to thermal zone setting
+hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon4/temp1_input
+
+; Base temperature for where to start the ramp (in degrees celsius)
+; Default: 0
+base-temperature = 20
+
+; Threshold temperature to display warning label (in degrees celsius)
+; Default: 80
+warn-temperature = 60
+
+
+
+
+
+
+
+
+
+
+; Used to display the state of random/repeat/repeatone
+toggle-on-foreground = #ff
+toggle-off-foreground = #55
+
+bar-progress-width = 10
+bar-progress-indicator = |
+bar-progress-fill = ─
+bar-progress-empty = ─
+
+[module/volume]
+type = internal/volume
+format-volume = <ramp-volume> <label-volume>
+label-muted = 
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+
+[module/clock]
+type = internal/date
+date =  %H:%M
+date-alt =  %Y-%m-%d %H:%M
+
+[module/poweroff]
+type = custom/script
+format-margin = 1
+exec =echo "   "
+click-left = systemctl poweroff
+
+
+[module/mpd]
+
+type = internal/mpd
+
+host = 127.0.0.1
+
+port = 6600
+
+format-online = <icon-prev> <toggle> <icon-next>   <label-song>  <label-time>
+
+format-online-margin = 2
+
+
+
+format-offline = <label-offline>
+
+label-offline =   offline
+
+format-offline-padding = 2
+
+
+
+icon-prev = 
+
+icon-stop = 
+
+icon-play = 
+
+icon-pause = 
+
+icon-next = 
+
+
+
+label-song-maxlen = 50
+
+label-song-ellipsis = true
+
+
+
+[module/time]
+
+type = internal/date
+
+interval = 10
+
+format-margin = 2
+
+
+
+time = "%H:%M"
+
+date = "%d %b"
+
+
+
+label = %date%, %time%
+
+
+[module/pulseaudio]
+
+type = internal/pulseaudio
+
+
+
+format-volume-margin = 2
+
+format-volume = <ramp-volume> <label-volume>
+
+label-volume = %percentage:3:3%%
+
+use-ui-max = false
+
+interval = 5
+
+
+
+ramp-volume-0 = ""
+
+ramp-volume-1 = ""
+
+ramp-volume-2 = ""
+
+
+
+
+
+label-muted = "  muted"   
+
+label-muted-padding = 0
+
+
+
+
+
+
+
+menu-0-0 = Shutdown
+menu-0-0-exec = /sbin/shutdown now ; requires chmod u+x /sbin/shutdown
+menu-0-1 = Reboot
+menu-0-1-exec = /sbin/reboot now ; requires chmod u+x /sbin/reboot
